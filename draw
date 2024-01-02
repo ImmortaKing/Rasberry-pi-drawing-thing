@@ -1,0 +1,241 @@
+import turtle
+from turtle import *
+from time import sleep
+from gpiozero import LED, Button
+from signal import pause
+from random import randint
+
+UpDown = 0
+tMoveSpeed = 10
+tPenSize = 5
+reSizer = 0
+gridSize = 30
+
+
+## yellow = fd|import keyboard
+Canvas = turtle.Screen()
+t = turtle.Turtle()
+turtle.colormode(255)
+t.color('red')
+t.pensize(tPenSize)
+t.speed(0)
+
+rotation = 0
+savedRotation = 0
+
+
+Tx = t.xcor()
+Ty = t.ycor()
+
+##((0, 23), (1, 10), (10, 30), (10, -100))
+
+## ((10, 30), (10, 100), (0, 23), (1, -10))
+
+## best ((0, 23), (1, 10), (10, 30), (10, 150))
+
+shape = ((0, 23), (1, 10), (10, 30), (10, 150))
+
+turtle.register_shape('diamond', shape)
+
+t.shape('diamond')
+
+
+buttonFD = Button(21)
+buttonBC = Button(20)
+buttonLT = Button(16)
+buttonRT = Button(12)
+buttonPlot = Button(25)
+buttonUpDown = Button(19)
+buttonSpeedUp = Button(24)
+buttonSpeedDown = Button(8)
+buttonRandomColors = Button(7)
+buttonBiggerPen = Button(17)
+buttonSmallerPen = Button(10)
+buttonWrite = Button(26)
+buttonFillStart = Button(13)
+buttonFillEnd = Button(5)
+buttonClear = Button(27)
+buttonUndo = Button(22)
+buttonSavePos = Button(2)
+buttonTpPos = Button(3)
+buttonChangeBG = Button(4)
+buttonGridMaker = Button(15)
+
+
+def Fd():
+    global tMoveSpeed
+    t.fd(tMoveSpeed)
+
+def Back():
+    global tMoveSpeed
+    t.backward(tMoveSpeed)
+def LT():
+    global rotation
+    t.left(10)
+    rotation = rotation + 10
+def RT():
+    global rotation
+    t.rt(10)
+    rotation = rotation - 10
+
+def Plot():
+    t.color('black')
+    i = int(t.xcor())
+    j = int(t.ycor())
+    t.write(str(i)+","+str(j))
+    t.color('red')
+
+def TPenUPDown():
+    global UpDown
+    if UpDown == 0:
+        UpDown = UpDown + 1
+        t.penup()
+        print("Pen Up")
+        sleep(0.5)
+    elif UpDown == 1:
+        UpDown = UpDown - 1
+        t.pendown()
+        print("Pen Down")
+        sleep(0.5)
+
+        sleep(0.5)
+def SpeedUp():
+    global tMoveSpeed
+    tMoveSpeed = tMoveSpeed + 1
+    print(tMoveSpeed)
+def SpeedDown():
+    global tMoveSpeed
+    if tMoveSpeed > 1:
+        tMoveSpeed = tMoveSpeed - 1
+        print(tMoveSpeed)
+    else:
+        print("can not go slower")
+pencolor
+def colorRadomizer():
+    R = randint(1, 255)
+    G = randint(1, 255)
+    B = randint(1, 255)
+    t.color(R,G,B)
+
+def BiggerPen():
+    global reSizer
+    global tPenSize
+    tPenSize = tPenSize + 1
+    print(tPenSize)
+    t.pensize(tPenSize)
+    reSizer = tPenSize / 10
+    t.shapesize(reSizer)
+
+def SmallerPen():
+    global reSizer
+    global tPenSize
+    if tPenSize == 1:
+        print("cant go lower than one")
+    else:
+        tPenSize = tPenSize - 1
+        print(tPenSize)
+        t.pensize(tPenSize)
+        reSizer = tPenSize / 10
+        t.shapesize(reSizer)
+
+Canvas.title("Turtle Playground")
+
+def WriteTings():
+    load = Canvas.textinput("NIM", "What you wanna write↓")
+    print(load)
+    t.write(load, font=('Arial', tPenSize, 'normal'))
+
+def FillStarted():
+    t.begin_fill()
+    print("Fill started")
+def FillEnded():
+    t.end_fill()
+    print("Fill Ended")
+def ClearCanvas():
+    t.clear()
+def UndoButton():
+    t.undo()
+def SavePoss():
+    global Tx
+    global Ty
+    global rotation
+    global savedRotation
+    Tx = t.xcor()
+    Ty = t.ycor()
+    print(int(t.xcor()) ,+ int(t.ycor()))
+    savedRotation = rotation
+def TpToSavedPos():
+    global Tx
+    global Ty
+    global UpDown
+    global savedRotation
+    t.setheading(savedRotation)
+    t.penup()
+    t.goto(Tx, Ty)
+    if UpDown == 0:
+        t.penup()
+    else:
+        t.pendown()
+
+def ChangeBG():
+    BgR = randint(1, 255)
+    BgG = randint(1, 255)
+    BgB = randint(1, 255)
+    Canvas.bgcolor(BgR, BgG, BgB)
+
+def GridMaker():
+    global gridSize
+    t.fd(1000)
+    t.back(2000)
+    t.home()
+    t.lt(90)
+    for i in range(50):
+        t.fd(1000)
+        t.back(2000)
+        t.sety(0)
+        t.setx(t.xcor() + gridSize)
+    t.goto(0,0)
+    for i in range(50):
+        t.fd(1000)
+        t.back(2000)
+        t.sety(0)
+        t.setx(t.xcor() - gridSize)
+    t.home()
+    for i in range(50):
+        t.fd(1000)
+        t.back(2000)
+        t.setx(0)
+        t.sety(t.ycor() - gridSize)
+    t.home()
+    for i in range(50):
+        t.fd(1000)
+        t.back(2000)
+        t.setx(0)
+        t.sety(t.ycor() + gridSize)
+    t.home()
+
+
+listen()
+buttonFD.when_pressed = Fd
+buttonBC.when_pressed = Back
+
+buttonLT.when_pressed = LT
+buttonRT.when_pressed = RT
+buttonPlot.when_pressed = Plot
+buttonUpDown.when_pressed = TPenUPDown
+buttonSpeedUp.when_pressed = SpeedUp
+buttonSpeedDown.when_pressed = SpeedDown
+buttonRandomColors.when_pressed = colorRadomizer
+buttonBiggerPen.when_pressed = BiggerPen
+buttonSmallerPen.when_pressed = SmallerPen
+buttonWrite.when_pressed = WriteTings
+buttonFillStart.when_pressed = FillStarted
+buttonFillEnd.when_pressed = FillEnded
+buttonClear.when_pressed = ClearCanvas
+buttonUndo.when_pressed = UndoButton
+buttonSavePos.when_pressed = SavePoss
+buttonTpPos.when_pressed = TpToSavedPos
+buttonChangeBG.when_pressed = ChangeBG
+buttonGridMaker.when_pressed = GridMaker
+
+mainloop()
